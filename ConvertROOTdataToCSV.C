@@ -46,7 +46,7 @@ void ConvertROOTdataToCSV(TString filelabel   = "calin",
         GitTag = "419662c";
     }
         
-    TString ROOTdatapath = datapath + GitTag + "/" + particleGun  + "/ROOTfiles/";
+    TString ROOTdatapath = datapath + GitTag + "/" + particleGun + "/";
     TString  CSVdatapath = datapath + "/CSVfiles/";
     TString  csvfilename = CSVdatapath + "/" + particleGun + "_" + filelabel + "_" + TChainName + ".csv";
     
@@ -56,9 +56,9 @@ void ConvertROOTdataToCSV(TString filelabel   = "calin",
     TChain * chain = new TChain(TChainName);
 
     // load all similar files and combine them to a large TChain
-    gSystem->cd( datapath + GitTag + "/" + particleGun );
-    TSystemDirectory dire( "ROOTfiles", "ROOTfiles"  );
-    std::cout << datapath + GitTag + "/" + particleGun << "/" << dire.GetName() << std::endl;
+    gSystem->cd( datapath + GitTag );
+    TSystemDirectory dire( particleGun, particleGun  );
+    std::cout << datapath + GitTag << "/" << dire.GetName() << std::endl;
     TList * files = dire.GetListOfFiles(); //Displays a list of all files
     for (auto file:*files) {
         std::string filename = (std::string)file->GetName();
