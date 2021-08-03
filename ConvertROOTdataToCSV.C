@@ -54,6 +54,9 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
     else if (particleGun=="singlePion") {
         GitTag = "419662c";
     }
+    if (filelabel == "tracking") {
+        TChainName  = "tracks";
+    }
         
     TString ROOTdatapath = datapath + GitTag + "/" + particleGun + "/";
     TString  CSVdatapath = datapath + "/CSVfiles/";
@@ -65,10 +68,7 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
     // for tracking
     Int_t   trackID, charge, nhits;
     Float_t px, py, pz, pcax, pcay, pcaz, dca2d;
-    
-    if (filelabel == "tracking") {
-        TChainName  = "tracks";
-    }
+        
     TChain * chain = new TChain(TChainName);
 
     // load all similar files and combine them to a large TChain
