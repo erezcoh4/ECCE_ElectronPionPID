@@ -118,7 +118,7 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
         chain -> GetEntry(event);
         
         if (filelabel == "tracking") {
-            StreamToCSVfile( {trackID,charge,nhits,px,py,pz,pcax,pcay,pcaz,dca2d} );
+            StreamToCSVfile( {(Float_t)trackID,(Float_t)charge,(Float_t)nhits,px,py,pz,pcax,pcay,pcaz,dca2d} );
         } else {
             StreamToCSVfile( {eta,x,y,z,e,phi} );
         }
