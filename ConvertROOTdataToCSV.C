@@ -62,6 +62,9 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
        
     Float_t eta, x, y, z, phi, e; // for calorimeters
     Float_t trackID, charge, nhits, px, py, pz, pcax, pcay, pcaz, dca2d; // for tracking
+    if (filelabel == "tracking") {
+        TChainName  = "tracks";
+    }
     TChain * chain = new TChain(TChainName);
 
     // load all similar files and combine them to a large TChain
