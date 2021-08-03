@@ -59,9 +59,13 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
     TString  CSVdatapath = datapath + "/CSVfiles/";
     TString  csvfilename = CSVdatapath + "/" + particleGun + "_" + filelabel + "_" + TChainName + ".csv";
     
-       
-    Float_t eta, x, y, z, phi, e; // for calorimeters
-    Float_t trackID, charge, nhits, px, py, pz, pcax, pcay, pcaz, dca2d; // for tracking
+    // for calorimeters
+    Float_t eta, x, y, z, phi, e;
+    
+    // for tracking
+    Int_t   trackID, charge, nhits;
+    Float_t px, py, pz, pcax, pcay, pcaz, dca2d;
+    
     if (filelabel == "tracking") {
         TChainName  = "tracks";
     }
