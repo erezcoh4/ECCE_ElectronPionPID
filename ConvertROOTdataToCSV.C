@@ -25,18 +25,6 @@ std::ofstream csvfile;
 
 void StreamToCSVfile (std::vector<Double_t> observables );
 
-// ToDo: (1) change data path in local PC to be same as on farm
-// (2) operate code on files on farm
-// (3) download one tracking file and one hcal file, print their structure
-// (4) add valiables for tracking and hcal files
-// (5) run localy to convert them to CSV
-// (6) run on farm to convert all files to 4 CSV files per particle gun: calin calout hcal tracking
-// (7) run the same on singlePion files
-// (8) download 8 CSV files to local computer
-// (9) plot distibutions
-// (10) plot one purity vs. efficiency for E, one for x/y or \rho, and one for z
-// (11) save results to keynote for presentation
-
 // Oo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.
 void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
                           TString particleGun = "singleElectron",
