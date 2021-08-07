@@ -101,9 +101,10 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
             // copy TChain variables to a csv
             std::cout << "processign " << Nentries <<  " entries from run number " << runnumber << std::endl;
             
-            chain -> SetBranchAddress("event",          &event      );
+            
             if (filelabel == "tracking") {
                 Int_t event;
+                chain -> SetBranchAddress("event",          &event      );
                 // trackID,charge,nhits,px,py,pz,pcax,pcay,pcaz,dca2d
                 chain -> SetBranchAddress("trackID",    &trackID    );
                 chain -> SetBranchAddress("charge",     &charge     );
@@ -116,6 +117,7 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
                 chain -> SetBranchAddress("pcaz",       &pcaz       );
                 chain -> SetBranchAddress("dca2d",      &dca2d      );
             } else {
+                chain -> SetBranchAddress("event",          &event      );
                 chain -> SetBranchAddress("clusterID",  &clusterID  );
                 chain -> SetBranchAddress("eta",        &eta        );
                 chain -> SetBranchAddress("x",          &x          );
