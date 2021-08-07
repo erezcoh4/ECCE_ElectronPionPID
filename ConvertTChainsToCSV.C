@@ -78,7 +78,15 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
     
     // run number
     char runnumberStr[7];
-
+    for (auto file:*files) {
+        std::string filename = (std::string)file->GetName();
+        std::cout << "adding " << filename << std::endl;
+        for (int i=0;i<7;i++) {runnumberStr[i] = filename[43+i];std::cout<<filename[43+i];}
+        std::cout << std::endl;
+        std::cout << atoi(runnumberStr) << std::endl;
+        
+    }
+    
     // load all similar files and combine them to a large TChain
     gSystem->cd( datapath + GitTag );
     TSystemDirectory dire( particleGun, particleGun  );
@@ -102,6 +110,7 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
             std::cout << "processign " << Nentries <<  " entries from run number " << runnumber << std::endl;
             
             chain -> SetBranchAddress("event",          &event      );
+            chain -> SetBranchAddress("runnumber",      &runnumber  );
             if (filelabel == "tracking") {
                 // trackID,charge,nhits,px,py,pz,pcax,pcay,pcaz,dca2d
                 chain -> SetBranchAddress("trackID",    &trackID    );
@@ -134,7 +143,7 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
                 } else {
                     StreamToCSVfile( {(Float_t)runnumber,event,clusterID,eta,x,y,z,e,phi} );
                 }
-                if (entry%(Nentries/2)==0) {
+                if (entry%(Nentries/10)==0) {
                     std::cout << std::setprecision(3) << 100.*entry/Nentries << "%" << std::endl;
                 }
             }
@@ -143,7 +152,7 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
     
     csvfile.close();
     
-    std::cout << "Done. Written variables into the CSV: " << csvfilename << std::endl;
+    std::cout << "Done. Written variables from " << Nentries <<  " entries into a CSV " << csvfilename << std::endl;
     return;
 }
 
