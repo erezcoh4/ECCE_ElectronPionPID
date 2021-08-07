@@ -103,6 +103,7 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
             
             chain -> SetBranchAddress("event",          &event      );
             if (filelabel == "tracking") {
+                Int_t event;
                 // trackID,charge,nhits,px,py,pz,pcax,pcay,pcaz,dca2d
                 chain -> SetBranchAddress("trackID",    &trackID    );
                 chain -> SetBranchAddress("charge",     &charge     );
