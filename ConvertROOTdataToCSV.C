@@ -50,8 +50,11 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
     TString  CSVdatapath = datapath + "/CSVfiles/";
     TString  csvfilename = CSVdatapath + "/" + particleGun + "_" + filelabel + "_" + TChainName + ".csv";
     
+    // event
+    Float_t event;
+    
     // for calorimeters
-    Float_t eta, x, y, z, phi, e;
+    Float_t clusterID, eta, x, y, z, phi, e;
     
     // for tracking
     Int_t   trackID, charge, nhits;
@@ -71,52 +74,55 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
             chain->Add( ROOTdatapath + filename.c_str() );
         }
     }
-    int Nevents = chain->GetEntries();
+    int Nentries = chain->GetEntries();
     
     // copy TChain variables to a csv
-    std::cout << "processign " << Nevents <<  " entries" << std::endl;
+    std::cout << "processign " << Nentries <<  " entries" << std::endl;
+    
+    chain -> SetBranchAddress("event",          &event  );
     if (filelabel == "tracking") {
         // trackID,charge,nhits,px,py,pz,pcax,pcay,pcaz,dca2d
-        chain -> SetBranchAddress("trackID",    &trackID);
-        chain -> SetBranchAddress("charge",     &charge );
-        chain -> SetBranchAddress("nhits",      &nhits  );
-        chain -> SetBranchAddress("px",         &px     );
-        chain -> SetBranchAddress("py",         &py     );
-        chain -> SetBranchAddress("pz",         &pz     );
-        chain -> SetBranchAddress("pcax",       &pcax   );
-        chain -> SetBranchAddress("pcay",       &pcay   );
-        chain -> SetBranchAddress("pcaz",       &pcaz   );
-        chain -> SetBranchAddress("dca2d",      &dca2d  );
+        chain -> SetBranchAddress("trackID",    &trackID    );
+        chain -> SetBranchAddress("charge",     &charge     );
+        chain -> SetBranchAddress("nhits",      &nhits      );
+        chain -> SetBranchAddress("px",         &px         );
+        chain -> SetBranchAddress("py",         &py         );
+        chain -> SetBranchAddress("pz",         &pz         );
+        chain -> SetBranchAddress("pcax",       &pcax       );
+        chain -> SetBranchAddress("pcay",       &pcay       );
+        chain -> SetBranchAddress("pcaz",       &pcaz       );
+        chain -> SetBranchAddress("dca2d",      &dca2d      );
     } else {
-        chain -> SetBranchAddress("eta",        &eta    );
-        chain -> SetBranchAddress("x",          &x      );
-        chain -> SetBranchAddress("y",          &y      );
-        chain -> SetBranchAddress("z",          &z      );
-        chain -> SetBranchAddress("phi",        &phi    );
-        chain -> SetBranchAddress("e",          &e      );
+        chain -> SetBranchAddress("clusterID",  &clusterID  );
+        chain -> SetBranchAddress("eta",        &eta        );
+        chain -> SetBranchAddress("x",          &x          );
+        chain -> SetBranchAddress("y",          &y          );
+        chain -> SetBranchAddress("z",          &z          );
+        chain -> SetBranchAddress("phi",        &phi        );
+        chain -> SetBranchAddress("e",          &e          );
     }
     csvfile.open( csvfilename );
     
     if (filelabel == "tracking") {
-        csvfile << "trackID,charge,nhits,px,py,pz,pcax,pcay,pcaz,dca2d," << std::endl;
+        csvfile << "event,trackID,charge,nhits,px,py,pz,pcax,pcay,pcaz,dca2d," << std::endl;
     } else {
-        csvfile << "eta,x,y,z,e,phi," << std::endl;
+        csvfile << "event,clusterID,eta,x,y,z,e,phi," << std::endl;
     }
-    for (int event=0; event < Nevents ; event++){
-        chain -> GetEntry(event);
+    for (int entry=0; entry < Nentries ; entry++){
+        chain -> GetEntry(entry);
         
         if (filelabel == "tracking") {
-            StreamToCSVfile( {(Float_t)trackID,(Float_t)charge,(Float_t)nhits,px,py,pz,pcax,pcay,pcaz,dca2d} );
+            StreamToCSVfile( {event,(Float_t)trackID,(Float_t)charge,(Float_t)nhits,px,py,pz,pcax,pcay,pcaz,dca2d} );
         } else {
-            StreamToCSVfile( {eta,x,y,z,e,phi} );
+            StreamToCSVfile( {event,clusterID,eta,x,y,z,e,phi} );
         }
-        if (event%(Nevents/10)==0) {
-            std::cout << 100.*event/Nevents << "%" << std::endl;
+        if (entry%(Nentries/10)==0) {
+            std::cout << std::setprecision(3) << 100.*entry/Nentries << "%" << std::endl;
         }
     }
     csvfile.close();
     
-    std::cout << "Done. Written variables from " << Nevents <<  " entries into a CSV " << csvfilename << std::endl;
+    std::cout << "Done. Written variables from " << Nentries <<  " entries into a CSV " << csvfilename << std::endl;
     return;
 }
 
@@ -143,87 +149,99 @@ void StreamToCSVfile ( std::vector<Double_t> observables ){
  
  ntuple variables:
  TNtuple ntp_cluster
- Br    2 :ntowers   : Float_t                                                *
- *Entries :      242 : Total  Size=       1540 bytes  File Size  =        225 *
- *Baskets :        1 : Basket Size=      32000 bytes  Compression=   4.66     *
+ ******************************************************************************
+ *Tree    :ntp_cluster: cluster => max truth primary                           *
+ *Entries :      266 : Total =           36218 bytes  File  Size =      14110 *
+ *        :          : Tree compression factor =   2.02                       *
+ ******************************************************************************
+ *Br    0 :event     : Float_t                                                *
+ *Entries :      266 : Total  Size=       1626 bytes  File Size  =        578 *
+ *Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.98     *
+ *............................................................................*
+ *Br    1 :clusterID : Float_t                                                *
+ *Entries :      266 : Total  Size=       1646 bytes  File Size  =        240 *
+ *Baskets :        1 : Basket Size=      32000 bytes  Compression=   4.78     *
+ *............................................................................*
+ *Br    2 :ntowers   : Float_t                                                *
+ *Entries :      266 : Total  Size=       1636 bytes  File Size  =        204 *
+ *Baskets :        1 : Basket Size=      32000 bytes  Compression=   5.61     *
  *............................................................................*
  *Br    3 :eta       : Float_t                                                *
- *Entries :      242 : Total  Size=       1520 bytes  File Size  =       1045 *
- *Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+ *Entries :      266 : Total  Size=       1616 bytes  File Size  =       1131 *
+ *Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.01     *
  *............................................................................*
  *Br    4 :x         : Float_t                                                *
- *Entries :      242 : Total  Size=       1510 bytes  File Size  =        619 *
- *Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.68     *
+ *Entries :      266 : Total  Size=       1606 bytes  File Size  =        633 *
+ *Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.80     *
  *............................................................................*
  *Br    5 :y         : Float_t                                                *
- *Entries :      242 : Total  Size=       1510 bytes  File Size  =        625 *
- *Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.67     *
+ *Entries :      266 : Total  Size=       1606 bytes  File Size  =        641 *
+ *Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.78     *
  *............................................................................*
  *Br    6 :z         : Float_t                                                *
- *Entries :      242 : Total  Size=       1510 bytes  File Size  =        600 *
- *Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.74     *
+ *Entries :      266 : Total  Size=       1606 bytes  File Size  =        565 *
+ *Baskets :        1 : Basket Size=      32000 bytes  Compression=   2.02     *
  *............................................................................*
  *Br    7 :phi       : Float_t                                                *
- *Entries :      242 : Total  Size=       1520 bytes  File Size  =        667 *
- *Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.57     *
+ *Entries :      266 : Total  Size=       1616 bytes  File Size  =        685 *
+ *Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.67     *
  *............................................................................*
  *Br    8 :e         : Float_t                                                *
- *Entries :      242 : Total  Size=       1510 bytes  File Size  =        499 *
- *Baskets :        1 : Basket Size=      32000 bytes  Compression=   2.09     *
+ *Entries :      266 : Total  Size=       1606 bytes  File Size  =        483 *
+ *Baskets :        1 : Basket Size=      32000 bytes  Compression=   2.36     *
  *............................................................................*
  *Br    9 :gparticleID : Float_t                                              *
- *Entries :      242 : Total  Size=       1560 bytes  File Size  =        216 *
- *Baskets :        1 : Basket Size=      32000 bytes  Compression=   4.88     *
+ *Entries :      266 : Total  Size=       1656 bytes  File Size  =        230 *
+ *Baskets :        1 : Basket Size=      32000 bytes  Compression=   5.00     *
  *............................................................................*
  *Br   10 :gflavor   : Float_t                                                *
- *Entries :      242 : Total  Size=       1540 bytes  File Size  =        214 *
- *Baskets :        1 : Basket Size=      32000 bytes  Compression=   4.90     *
+ *Entries :      266 : Total  Size=       1636 bytes  File Size  =        227 *
+ *Baskets :        1 : Basket Size=      32000 bytes  Compression=   5.04     *
  *............................................................................*
  *Br   11 :gnhits    : Float_t                                                *
- *Entries :      242 : Total  Size=       1535 bytes  File Size  =        205 *
- *Baskets :        1 : Basket Size=      32000 bytes  Compression=   5.11     *
+ *Entries :      266 : Total  Size=       1631 bytes  File Size  =        221 *
+ *Baskets :        1 : Basket Size=      32000 bytes  Compression=   5.18     *
  *............................................................................*
  *Br   12 :geta      : Float_t                                                *
- *Entries :      242 : Total  Size=       1525 bytes  File Size  =        790 *
- *Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.32     *
+ *Entries :      266 : Total  Size=       1621 bytes  File Size  =        846 *
+ *Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.35     *
  *............................................................................*
  *Br   13 :gphi      : Float_t                                                *
- *Entries :      242 : Total  Size=       1525 bytes  File Size  =        791 *
- *Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.32     *
- *............................................................................*
- *Br   14 :ge        : Float_t                                                *
- *Entries :      242 : Total  Size=       1515 bytes  File Size  =        760 *
- *Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.37     *
- *............................................................................*
- *Br   15 :gpt       : Float_t                                                *
- *Entries :      242 : Total  Size=       1520 bytes  File Size  =        765 *
- *Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.37     *
- *............................................................................*
- *Br   16 :gvx       : Float_t                                                *
- *Entries :      242 : Total  Size=       1520 bytes  File Size  =        202 *
- *Baskets :        1 : Basket Size=      32000 bytes  Compression=   5.17     *
- *............................................................................*
- *Br   17 :gvy       : Float_t                                                *
- *Entries :      242 : Total  Size=       1520 bytes  File Size  =        202 *
- *Baskets :        1 : Basket Size=      32000 bytes  Compression=   5.17     *
- *............................................................................*
- *Br   18 :gvz       : Float_t                                                *
- *Entries :      242 : Total  Size=       1520 bytes  File Size  =        792 *
- *Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.32     *
- *............................................................................*
- *Br   19 :gembed    : Float_t                                                *
- *Entries :      242 : Total  Size=       1535 bytes  File Size  =        211 *
- *Baskets :        1 : Basket Size=      32000 bytes  Compression=   4.97     *
- *............................................................................*
- *Br   20 :gedep     : Float_t                                                *
- *Entries :      242 : Total  Size=       1530 bytes  File Size  =        771 *
+ *Entries :      266 : Total  Size=       1621 bytes  File Size  =        840 *
  *Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.36     *
  *............................................................................*
- *Br   21 :efromtruth : Float_t                                               *
- *Entries :      242 : Total  Size=       1555 bytes  File Size  =        921 *
- *Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.14     *
+ *Br   14 :ge        : Float_t                                                *
+ *Entries :      266 : Total  Size=       1611 bytes  File Size  =        807 *
+ *Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.41     *
  *............................................................................*
- 
+ *Br   15 :gpt       : Float_t                                                *
+ *Entries :      266 : Total  Size=       1616 bytes  File Size  =        820 *
+ *Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.39     *
+ *............................................................................*
+ *Br   16 :gvx       : Float_t                                                *
+ *Entries :      266 : Total  Size=       1616 bytes  File Size  =        218 *
+ *Baskets :        1 : Basket Size=      32000 bytes  Compression=   5.23     *
+ *............................................................................*
+ *Br   17 :gvy       : Float_t                                                *
+ *Entries :      266 : Total  Size=       1616 bytes  File Size  =        218 *
+ *Baskets :        1 : Basket Size=      32000 bytes  Compression=   5.23     *
+ *............................................................................*
+ *Br   18 :gvz       : Float_t                                                *
+ *Entries :      266 : Total  Size=       1616 bytes  File Size  =        841 *
+ *Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.36     *
+ *............................................................................*
+ *Br   19 :gembed    : Float_t                                                *
+ *Entries :      266 : Total  Size=       1631 bytes  File Size  =        225 *
+ *Baskets :        1 : Basket Size=      32000 bytes  Compression=   5.08     *
+ *............................................................................*
+ *Br   20 :gedep     : Float_t                                                *
+ *Entries :      266 : Total  Size=       1626 bytes  File Size  =        824 *
+ *Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.39     *
+ *............................................................................*
+ *Br   21 :efromtruth : Float_t                                               *
+ *Entries :      266 : Total  Size=       1651 bytes  File Size  =        970 *
+ *Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.18     *
+ *............................................................................*
 
  
  
