@@ -9,13 +9,18 @@
  ---------------------
  root -l ConvertROOTdataToCSV.C(filelabel,particleGun,TChainName)
  root -l ConvertROOTdataToCSV.C
+ root -l 'ConvertROOTdataToCSV.C("tracking","singleElectron","tracks")'
  root -l 'ConvertROOTdataToCSV.C("hcalin","singleElectron","ntp_cluster")'
  root -l 'ConvertROOTdataToCSV.C("hcalout","singleElectron","ntp_cluster")'
  
  
- supported file-labels:
+ supported file-labels / TChainName:
  
- hcalin hcalout fhcal tracking
+ hcalin         ntp_cluster
+ hcalout        ntp_cluster
+ fhcal          ntp_cluster
+ tracking       tracks
+ femc           ntp_cluster
  
  */
 
@@ -73,6 +78,7 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
     Float_t clusterID, eta, x, y, z, phi, e;
     
     // for tracking
+    Int_t   evt;
     Int_t   trackID, charge, nhits;
     Float_t px, py, pz, pcax, pcay, pcaz, dca2d;
     
@@ -84,6 +90,10 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
     TSystemDirectory dire( particleGun, particleGun  );
     std::cout << datapath + GitTag << "/" << dire.GetName() << std::endl;
     TList * files = dire.GetListOfFiles(); //Displays a list of all files
+    
+    Int_t Nfiles = sizeof(files)/sizeof(files->At(0)), nfile = 0;
+    std::cout << "processing " <<  Nfiles << " files " << std::endl;
+    
     for (auto file:*files) {
         std::string filename = (std::string)file->GetName();
         if (filename.find(filelabel) != std::string::npos) {
@@ -103,8 +113,7 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
             
             
             if (filelabel == "tracking") {
-                Int_t event;
-                chain -> SetBranchAddress("event",          &event      );
+                chain -> SetBranchAddress("event",      &evt        );
                 // trackID,charge,nhits,px,py,pz,pcax,pcay,pcaz,dca2d
                 chain -> SetBranchAddress("trackID",    &trackID    );
                 chain -> SetBranchAddress("charge",     &charge     );
@@ -117,7 +126,7 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
                 chain -> SetBranchAddress("pcaz",       &pcaz       );
                 chain -> SetBranchAddress("dca2d",      &dca2d      );
             } else {
-                chain -> SetBranchAddress("event",          &event      );
+                chain -> SetBranchAddress("event",      &event      );
                 chain -> SetBranchAddress("clusterID",  &clusterID  );
                 chain -> SetBranchAddress("eta",        &eta        );
                 chain -> SetBranchAddress("x",          &x          );
@@ -133,14 +142,17 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
                 chain -> GetEntry(entry);
                 
                 if (filelabel == "tracking") {
-                    StreamToCSVfile( {(Float_t)runnumber,event,(Float_t)trackID,(Float_t)charge,(Float_t)nhits,px,py,pz,pcax,pcay,pcaz,dca2d} );
+                    StreamToCSVfile( {(Float_t)runnumber,(Float_t)evt,(Float_t)trackID,(Float_t)charge,(Float_t)nhits,px,py,pz,pcax,pcay,pcaz,dca2d} );
                 } else {
                     StreamToCSVfile( {(Float_t)runnumber,event,clusterID,eta,x,y,z,e,phi} );
                 }
-                if (entry%(Nentries/2)==0) {
-                    std::cout << std::setprecision(3) << 100.*entry/Nentries << "%" << std::endl;
-                }
+                
             }
+            // print progress
+            if (nfile%(Nfiles/10)==0) {
+                std::cout << std::setprecision(3) << 100.*nfile/Nfiles << "%" << std::endl;
+            }
+            nfile++;
         }
     }
     
