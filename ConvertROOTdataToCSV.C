@@ -154,6 +154,7 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
                 }
                 
             }
+            if (fdebug>3) { std::cout << "print progress: done file " << nfile << " out of " << Nfiles << " files" << std::endl;}
             // print progress
             if (nfile%(Nfiles/10)==0) {
                 std::cout << std::setprecision(3) << 100.*nfile/Nfiles << "%" << std::endl;
