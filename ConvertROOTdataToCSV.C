@@ -91,10 +91,15 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
     std::cout << datapath + GitTag << "/" << dire.GetName() << std::endl;
     TList * files = dire.GetListOfFiles(); //Displays a list of all files
     
-    Int_t Nfiles = sizeof(files)/sizeof(files->At(0)), nfile = 0;
-    if (fdebug>0) {
-        std::cout << "processing " <<  Nfiles << " files " << std::endl;
+    // count how many files we want to process
+    Int_t Nfiles = 0, nfile = 0;
+    for (auto file:*files) {
+        std::string filename = (std::string)file->GetName();
+        if (filename.find(filelabel) != std::string::npos) {
+            Nfiles++;
+        }
     }
+    if (fdebug>0) { std::cout << "processing " <<  Nfiles << " " << filelabel << " files " << std::endl; }
     
     
     for (auto file:*files) {
@@ -156,7 +161,10 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
             }
             if (fdebug>3) { std::cout << "print progress: done file " << nfile << " out of " << Nfiles << " files" << std::endl;}
             // print progress
-            if (nfile%(Nfiles/10)==0) {
+            if (Nfiles<10) {
+                std::cout << "Done file " << nfile << " out of " << Nfiles << " files" << std::endl;
+            }
+            else if (nfile%(Nfiles/10)==0) {
                 std::cout << std::setprecision(3) << 100.*nfile/Nfiles << "%" << std::endl;
             }
             nfile++;
