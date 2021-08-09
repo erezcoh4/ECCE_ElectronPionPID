@@ -1,15 +1,14 @@
 /*
- ToDo:
- event counter resets for each run - need to keep track of run number !
  
+ last edit Aug-9,2021
  
  convert EIC eval ROOT files to CSV
  
  execute:
  ---------------------
- root -l ConvertROOTdataToCSV.C(filelabel,particleGun,TChainName)
+ root -l ConvertROOTdataToCSV.C(filelabel="hcalin", particleGun="singleElectron", TChainName="ntp_cluster", fdebug=1)
  root -l ConvertROOTdataToCSV.C
- root -l 'ConvertROOTdataToCSV.C("tracking","singleElectron","tracks")'
+ root -l 'ConvertROOTdataToCSV.C("tracking","singleElectron","tracks",4)'
  root -l 'ConvertROOTdataToCSV.C("hcalin","singleElectron","ntp_cluster")'
  root -l 'ConvertROOTdataToCSV.C("hcalout","singleElectron","ntp_cluster")'
  
@@ -37,7 +36,8 @@ void StreamToCSVfile (std::vector<Double_t> observables );
 // Oo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.
 void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
                           TString particleGun = "singleElectron",
-                          TString TChainName  = "ntp_cluster"){
+                          TString TChainName  = "ntp_cluster",
+                          int fdebug = 1){
     
     if (std::string(gSystem->pwd()).find("erezcohen/Desktop")!=std::string::npos){
         evalpath = "/Users/erezcohen/Desktop/data/EIC/ECCE/ElectronPionPID/";
@@ -92,12 +92,15 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
     TList * files = dire.GetListOfFiles(); //Displays a list of all files
     
     Int_t Nfiles = sizeof(files)/sizeof(files->At(0)), nfile = 0;
-    std::cout << "processing " <<  Nfiles << " files " << std::endl;
+    if (fdebug>0) {
+        std::cout << "processing " <<  Nfiles << " files " << std::endl;
+    }
+    
     
     for (auto file:*files) {
         std::string filename = (std::string)file->GetName();
         if (filename.find(filelabel) != std::string::npos) {
-            std::cout << "adding " << filename << std::endl;
+            if (fdebug>1) {std::cout << "adding " << filename << std::endl;}
             chain = new TChain(TChainName);
             chain -> Add( ROOTdatapath + filename.c_str() );
             
@@ -105,14 +108,16 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
             for (int i=0;i<7;i++) {runnumberStr[i] = filename[43+i];}
             runnumber = atoi(runnumberStr);
             
+            
             // number of entries
             int Nentries = chain->GetEntries();
             
             // copy TChain variables to a csv
-            std::cout << "processign " << Nentries <<  " entries from run number " << runnumber << std::endl;
+            if (fdebug>1) {std::cout << "processign " << Nentries <<  " entries from run number " << runnumber << std::endl;}
             
             
             if (filelabel == "tracking") {
+                if (fdebug>2) { std::cout << "reading tracking " << std::endl;}
                 chain -> SetBranchAddress("event",      &evt        );
                 // trackID,charge,nhits,px,py,pz,pcax,pcay,pcaz,dca2d
                 chain -> SetBranchAddress("trackID",    &trackID    );
@@ -139,6 +144,7 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
             
             
             for (int entry=0; entry < Nentries ; entry++){
+                if (fdebug>3) { std::cout << "getting entry " << entry << std::endl;}
                 chain -> GetEntry(entry);
                 
                 if (filelabel == "tracking") {
