@@ -101,7 +101,10 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
     }
     if (fdebug>0) { std::cout << "processing " <<  Nfiles << " " << filelabel << " files " << std::endl; }
     
-    
+    int iStart;
+    if (particleGun=="singleElectron")  iStart = 43;
+    else                                iStart = 39;
+
     for (auto file:*files) {
         std::string filename = (std::string)file->GetName();
         if (filename.find(filelabel) != std::string::npos) {
@@ -110,7 +113,7 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
             chain -> Add( ROOTdatapath + filename.c_str() );
             
             // get run number from file name
-            for (int i=0;i<7;i++) {runnumberStr[i] = filename[43+i];}
+            for (int i=0;i<7;i++) {runnumberStr[i] = filename[iStart+i];}
             runnumber = atoi(runnumberStr);
             
             
@@ -118,7 +121,7 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
             int Nentries = chain->GetEntries();
             
             // copy TChain variables to a csv
-            if (fdebug>1) {std::cout << "processign " << Nentries <<  " entries from run number " << runnumber << std::endl;}
+            if (fdebug>1) {std::cout << "processing " << Nentries <<  " entries from run number " << runnumber << std::endl;}
             
             
             if (filelabel == "tracking") {
