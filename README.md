@@ -9,11 +9,9 @@ This analysis utilizes EVAL ROOT files from Fun4All simulations with a single pa
 Sep-23, 2021    
 -------------
 1. Added information to README file
-
 2. Added *NeventsMax* argument to ConvertROOTdataToCSV.C
-
 3. Moved *ConvertTChainsToCSV.C* to arxiv
-
+4. Updated data path to "/w/eic-scshelf2103/users/ecohen/" (from previous "/w/eic3-scshelf2104/users/ecohen/")
 
 ## Copy data to local computer for post-analysis
 

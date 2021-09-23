@@ -18,8 +18,8 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
     
     if (std::string(gSystem->pwd()).find("erezcohen/Desktop")!=std::string::npos){
         evalpath = "/Users/erezcohen/Desktop/data/EIC/ECCE/ElectronPionPID/";
-    } else if (std::string(gSystem->pwd()).find("home/cohen")!=std::string::npos){
-        evalpath = "/w/eic3-scshelf2104/users/ecohen/";
+    } else if (std::string(gSystem->pwd()).find("home/cohen")!=std::string::npos){        
+        evalpath = "/w/eic-scshelf2103/users/ecohen/";
     }
     datapath = evalpath + "EvalFiles/";
     if (particleGun=="singleElectron") {
