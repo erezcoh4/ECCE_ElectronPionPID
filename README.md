@@ -6,6 +6,13 @@ This analysis utilizes EVAL ROOT files from Fun4All simulations with a single pa
 
 ## Revisions
 
+Nov-9, 2021    
+-------------
+1. Move to files from pass 3 - these are new files from the afterburner Nov-2021, using the calibration flag that could be set to “improve” the E/p  (i.e., move it closer to 1)
+2. Apply E/p cuts that are optimised per momentum bin
+3. Start to add initial \pi/e ratio from Xiaochao Z. 
+
+
 Sep-23, 2021    
 -------------
 1. Added information to README file
