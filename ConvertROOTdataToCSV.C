@@ -18,7 +18,7 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
     
     if (std::string(gSystem->pwd()).find("erezcohen/Desktop")!=std::string::npos){
         evalpath = "/Users/erezcohen/Desktop/data/EIC/ECCE/ElectronPionPID/";
-    } else if (std::string(gSystem->pwd()).find("home/cohen")!=std::string::npos){        
+    } else if (std::string(gSystem->pwd()).find("home/cohen")!=std::string::npos){
         evalpath = "/w/eic-scshelf2103/users/ecohen/";
     }
     datapath = evalpath + "EvalFiles/";
@@ -144,6 +144,8 @@ void ConvertROOTdataToCSV(TString filelabel   = "hcalin",
                     break;
                 }
                 Nevents++;
+                
+                if (fdebug>5) { std::cout << "Nevents = " << Nevents << std::endl;}
             }
             if ((NeventsMax>0) && (Nevents > NeventsMax)) {
                 break;
